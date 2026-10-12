@@ -52,7 +52,7 @@ docker compose -f compose-monitor.yaml exec monitor-api python create_user.py
 스크립트는 이미 있는 계정을 덮어쓰지 않습니다. 비밀번호는 해시로 DB에 저장됩니다.
 계정을 바꾸려면 실행 전에 `exec -e PRACTICE_USERNAME=... -e PRACTICE_PASSWORD=...`를 지정합니다.
 
-- 일반 게시판: http://localhost:8081/ (로그인 → `/posts`)
+- 일반 게시판: http://localhost:8081/ (로그인 → `/board`)
 - 감시 로그인 기록: http://localhost:8082/
 - 감시 DB 메모: http://localhost:8082/notes
 
