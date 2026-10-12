@@ -17,7 +17,7 @@ def register_request_logging(app):
 
     @app.after_request
     def record_request(response):
-        if request.endpoint == "static":
+        if request.endpoint in {"static", "health"}:
             return response
 
         record = {

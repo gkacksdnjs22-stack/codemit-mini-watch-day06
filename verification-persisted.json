@@ -1,0 +1,13 @@
+{
+  "phase": "persisted",
+  "passed": [
+    "감시 gateway/API 준비",
+    "운영자 로그인",
+    "Next.js production /",
+    "Next.js production /notes",
+    "새 세션 운영자 로그인",
+    "새 세션 메모 목록 재조회",
+    "저장된 메모 내용 상세 조회",
+    "저장된 로그인 기록 유지"
+  ]
+}
