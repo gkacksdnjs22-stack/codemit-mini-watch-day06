@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>나의 게시판</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main>
+        {% include '_site_nav.html' %}
+        <header class="welcome">
+            <div>
+                <span class="badge">작은 기록, 다정한 공간</span>
+                <h1>나의 게시판</h1>
+                <p class="intro">오늘의 생각과 이야기를 한 장씩 남겨보세요.</p>
+            </div>
+            <span class="flower" aria-hidden="true">✿</span>
+        </header>
+        <div class="list-heading">
+            <span class="count">모든 이야기 · {{ posts | length }}개의 글</span>
+            <a class="button-link" href="{{ url_for('posts.new_post') }}">＋ 새 글 작성</a>
+        </div>
+
+        {% if posts %}
+            <ul>
+                {% for post in posts %}
+                    <li>
+                        <a class="post-link" href="{{ url_for('posts.detail', post_id=post.id) }}">
+                            <span class="number">{{ post.id }}</span>
+                            <span class="post-title">{{ post.title }}</span>
+                            <span class="arrow" aria-hidden="true">→</span>
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+        {% else %}
+            <p>등록된 게시글이 없습니다.</p>
+        {% endif %}
+    </main>
+</body>
+</html>

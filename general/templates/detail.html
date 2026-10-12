@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{{ post.title }} · 나의 게시판</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main>
+        {% include '_site_nav.html' %}
+        <p>게시글 번호: {{ post.id }}</p>
+        <h1>{{ post.title }}</h1>
+        <div class="post-body">{{ post.body }}</div>
+        <p><a href="{{ url_for('posts.edit_post', post_id=post.id) }}">수정하기</a></p>
+        <p><a href="{{ url_for('posts.confirm_delete', post_id=post.id) }}">삭제하기</a></p>
+        <p><a href="{{ url_for('posts.index') }}">목록으로</a></p>
+    </main>
+</body>
+</html>

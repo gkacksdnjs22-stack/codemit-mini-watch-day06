@@ -1,0 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=Jua&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Gowun+Dodum&display=swap');
+
+.site-nav { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; padding-bottom:20px; margin-bottom:24px; border-bottom:1px solid #eee3f2; }
+.site-brand { font-family:'Jua','Malgun Gothic',sans-serif; font-size:25px; color:#604777; }
+.site-links { display:flex; align-items:center; gap:18px; font-size:14px; }
+.nav-signup { background:#e4d2f3; border-radius:12px; padding:7px 14px; }
+.nav-user { color:#75677f; font-size:13px; }
+.nav-logout { margin:0; }
+.nav-logout button { margin:0; padding:7px 14px; font-size:14px; }
+.auth-card { max-width:500px; }
+.auth-card h1 { margin:14px 0 10px; }
+.auth-card .site-brand { display:block; margin-bottom:22px; }
+.auth-badge { margin-top:8px; }
+.auth-submit { width:100%; margin-top:28px; }
+.auth-footer { text-align:center; font-size:14px; color:#75677f; padding-top:18px; border-top:1px solid #eee3f2; }
+.auth-footer a { font-weight:bold; margin-left:8px; }
+.field-help { margin:4px 0; color:#87778f; font-size:12px; }
+.form-success { padding:12px; background:#e8f3ed; border-radius:10px; color:#436c55; font-size:14px; }
+@media(max-width:420px) { .site-links { gap:12px; } }
+
+body {
+    display: flow-root;
+    margin: 0;
+    background: linear-gradient(135deg, #faedf3, #f2edfc 55%, #eaf5ef);
+    min-height: 100vh;
+    color: #484054;
+    font-family: 'Gowun Dodum', 'Malgun Gothic', sans-serif;
+    font-size: 17px;
+    line-height: 1.8;
+}
+
+main {
+    max-width: 720px;
+    margin: 48px auto;
+    padding: 40px;
+    background: #fffdfb;
+    border: 1px solid #e8ddef;
+    border-radius: 24px;
+    box-shadow: 0 8px 28px #68507812;
+}
+
+a { color: #72528f; }
+a { text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+.welcome { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+.welcome h1 { margin: 10px 0; }
+.intro { margin: 0; color: #75677f; font-size: 15px; }
+.badge { display: inline-block; padding: 4px 12px; border-radius: 20px; background: #f7e5ed; color: #81576a; font-size: 13px; }
+.flower { font-size: 48px; color: #c6a4d8; padding: 8px 18px; background: #f5edf9; border-radius: 24px; }
+.list-heading { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; margin-top: 32px; padding-top: 24px; border-top: 1px solid #eee3f2; }
+.count { color: #75677f; font-size: 14px; }
+.button-link { display: inline-block; background: #e4d2f3; color: #51356d; border-radius: 14px; padding: 10px 18px; font-weight: bold; }
+.button-link:hover { background: #d7bfe9; text-decoration: none; }
+.post-link { display: flex; align-items: center; gap: 14px; color: #484054; }
+.post-link:hover { text-decoration: none; }
+.number { padding: 2px 10px; border-radius: 10px; background: #ffffffa6; color: #786587; font-size: 13px; }
+.post-title { flex: 1; min-width: 0; }
+.arrow { color: #89739c; }
+.footnote { text-align: center; font-size: 13px; color: #786a82; margin: 28px 0 0; }
+
+h1 {
+    font-family: 'Jua', 'Malgun Gothic', sans-serif;
+    color: #604777;
+    font-size: 30px;
+    font-weight: 400;
+    line-height: 1.5;
+}
+
+ul { list-style: none; padding: 0; margin-top: 24px; }
+li {
+    margin-bottom: 12px;
+    padding: 16px 20px;
+    background: #efe5f8;
+    border-radius: 14px;
+    overflow-wrap: anywhere;
+}
+li:nth-child(even) { background: #e8f3ed; }
+li:nth-child(3n) { background: #f9e9e2; }
+li:hover { box-shadow: 0 3px 12px #68507812; }
+
+.post-body {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+    padding: 20px;
+    background: #f8f2fc;
+    border-radius: 14px;
+}
+
+label { display: block; margin-top: 16px; }
+input, textarea {
+    box-sizing: border-box;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #d6c5e4;
+    border-radius: 12px;
+    background: #fcf9ff;
+    color: #484054;
+    font: inherit;
+}
+button {
+    margin: 16px 0;
+    padding: 10px 18px;
+    border: 0;
+    border-radius: 12px;
+    background: #e4d2f3;
+    color: #51356d;
+    font: inherit;
+    cursor: pointer;
+}
+.form-error { color: #b42318; }
+
+button:hover { background: #d7bfe9; }
+textarea { resize: vertical; line-height: 1.8; }
+h1 { overflow-wrap: anywhere; }
+input:focus, textarea:focus { outline: 2px solid #b595d0; outline-offset: 2px; }
+a:focus-visible, button:focus-visible { outline: 2px solid #72528f; outline-offset: 3px; }
+
+@media (max-width: 600px) {
+    main { margin: 24px 12px; padding: 24px; }
+}

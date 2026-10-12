@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>게시글 삭제 확인</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <main>
+        {% include '_site_nav.html' %}
+        <h1>게시글 삭제 확인</h1>
+        <p>「{{ post.title }}」 글을 삭제하시겠습니까?</p>
+        <p>삭제하면 되돌릴 수 없습니다.</p>
+        <form method="post" action="{{ url_for('posts.confirm_delete', post_id=post.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button type="submit">삭제 확인</button>
+        </form>
+        <a href="{{ url_for('posts.detail', post_id=post.id) }}">취소</a>
+    </main>
+</body>
+</html>
