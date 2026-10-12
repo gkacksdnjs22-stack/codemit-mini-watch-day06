@@ -172,3 +172,15 @@ docker compose -f compose-general.yaml exec general-api getent hosts monitor-db
 Docker 적용 커밋 식별자와 검증 결과는 작업을 마친 뒤 아래에 기록합니다.
 앱 소스/SQL/의존성 잠금 파일/Compose/Dockerfile/gateway/이 README를 함께 제출합니다.
 실제 `.env`, node_modules, .next, 가상환경, 캐시, DB 자료는 Git과 Docker 빌드에서 제외합니다.
+
+Docker 초기 적용 커밋: `4f28b6c5803f316d9ca01ff95a55de95a2da6529`.
+일반/감시 Compose, 3개 Dockerfile, 망/볼륨/SQL, Next.js 기록 화면, 계정 준비를 추가했습니다.
+보완 커밋 `d4e89a8`에서는 기존 로컬 Vite 산출물을 제거해 일반 로그인 화면이
+제출된 Jinja 소스로 동작하게 했고, gateway 통합 점검 프로그램을 추가했습니다.
+
+심화 PR 개선: `codex/gateway-readiness`에서 두 gateway가 API/Next.js healthcheck를
+통과한 뒤 시작하도록 바꿨습니다. 실행 중이라는 이유만으로 준비 전인 upstream에
+요청을 전달할 수 있던 상태를 개선합니다. 일반 `/health`는 요청 기록에서 제외해
+점검 요청이 실제 로그인 기록을 밀어내지 않게 했습니다. 변경 파일은 두 Compose,
+`general/app.py`, `general/request_logging.py`입니다. 점검 스크립트의 메모 목록/상세
+조회 구분도 맞췄습니다. 커밋·PR 주소와 검증 결과는 아래 최종 기록을 참조하세요.

@@ -17,6 +17,11 @@ register_request_logging(app)
 app.context_processor(template_auth)
 
 
+@app.get("/health")
+def health():
+    return {"service": "general", "status": "ok"}
+
+
 @app.after_request
 def private_response(response):
     if request.endpoint != "static":
