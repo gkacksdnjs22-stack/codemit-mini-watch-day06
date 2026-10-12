@@ -169,7 +169,7 @@ docker compose -f compose-general.yaml exec general-api getent hosts monitor-db
 
 ## Git 작업
 
-Docker 적용 커밋 식별자와 검증 결과는 작업을 마친 뒤 아래에 기록합니다.
+Docker 적용 커밋 식별자와 검증 결과는 아래에 기록했습니다.
 앱 소스/SQL/의존성 잠금 파일/Compose/Dockerfile/gateway/이 README를 함께 제출합니다.
 실제 `.env`, node_modules, .next, 가상환경, 캐시, DB 자료는 Git과 Docker 빌드에서 제외합니다.
 
@@ -184,3 +184,38 @@ Docker 초기 적용 커밋: `4f28b6c5803f316d9ca01ff95a55de95a2da6529`.
 점검 요청이 실제 로그인 기록을 밀어내지 않게 했습니다. 변경 파일은 두 Compose,
 `general/app.py`, `general/request_logging.py`입니다. 점검 스크립트의 메모 목록/상세
 조회 구분도 맞췄습니다. 커밋·PR 주소와 검증 결과는 아래 최종 기록을 참조하세요.
+
+최종 PR: https://github.com/gkacksdnjs22-stack/codemit-mini-watch-day06/pull/1
+
+- base `main`, 작업 브랜치 `codex/gateway-readiness`.
+- 개선 커밋 `ee2bb2906733c4c7be350f98382aa34c348fd70a`.
+- 원격 diff를 읽고 망/볼륨/공개 포트 유지, 준비 대기 대상, health 요청 제외를 검토했습니다.
+- Create a merge commit 방식으로 병합 완료(Merged).
+  병합 커밋 `325274ee5373dd99dcb9a7358e64951bfda7c279`를 로컬 main에서 pull했습니다.
+- GitHub 제출 저장소: https://github.com/gkacksdnjs22-stack/codemit-mini-watch-day06
+
+## 실제 확인 결과 (2026-10-12)
+
+두 `config --quiet`와 Next.js 이미지의 `npm run build`가 통과했습니다.
+7개 서비스가 실행 중이며 두 DB, 두 API, Next.js가 healthy입니다.
+공유 망 inspect에는 두 API만 나왔고 일반 API에서 `monitor-api`, `general-db`를
+조회할 수 있었습니다. `monitor-db` 조회는 종료 코드 2/출력 없음으로 실패하여
+다른 DB 망의 분리와 일치했습니다.
+
+`verify_docker.py prepare` 14개 점검을 통과했습니다. 브라우저에서도 일반 HTML 폼의
+잘못된 비밀번호 안내, 올바른 로그인 후 `/board` 이동, 감시 로그인/기록 불러오기,
+DB 메모 상세 내용, 새로고침 후 메모 목록 유지를 직접 확인했습니다.
+일반→감시 순서로 각각 `down`한 뒤 감시를 먼저 `up -d`하고 `auth/me` 200을 확인한
+후 일반을 `up -d`했습니다. `verify_docker.py persisted` 8개 점검에서 같은 메모 ID의
+목록/상세 내용과 같은 로그인 이벤트 ID들이 그대로 남아 있음을 확인했습니다.
+두 검증 JSON은 결과를 보조하며 제출의 핵심은 실제 앱 코드/연결 설정/SQL/볼륨입니다.
+
+자동 점검은 호스트 Python 3 표준 라이브러리만 사용하며 아래처럼 실행합니다.
+`prepare`는 실습 로그인 요청과 Docker 점검 메모를 만들어 ID를 로컬 임시 파일에 기록하고,
+`persisted`는 그 ID를 다시 조회합니다. 임시 ID 파일은 Git에 포함하지 않습니다.
+
+```powershell
+python verify_docker.py prepare
+# 위의 down → 감시 up → 준비 확인 → 일반 up 절차 후
+python verify_docker.py persisted
+```
