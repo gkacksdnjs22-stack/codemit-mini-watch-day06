@@ -45,10 +45,10 @@ export default function Events() {
     catch (err) { setError(err.message); }
     finally { setBusy(false); }
   }
-  return <section><p className="eyebrow">MONITOR / REQUEST LOG</p><h1>로그인 기록</h1><p>일반 게시판의 로그인 성공과 실패를 확인합니다.</p>
+  return <section><p className="eyebrow">다정한 공간을 살피는 기록</p><h1>로그인 기록</h1><p className="intro">일반 게시판의 로그인 성공과 실패를 함께 살펴봐요.</p>
     {error && <p role="alert">{error}</p>}
-    {ready && !user && <button type="button" onClick={retrySession} disabled={busy}>연결 다시 확인</button>}
-    {!ready ? <p>로그인 상태 확인 중…</p> : !user ? <form onSubmit={signIn}>
+    {ready && !user && <button className="connection-retry" type="button" onClick={retrySession} disabled={busy}>연결 다시 확인</button>}
+    {!ready ? <p>로그인 상태 확인 중…</p> : !user ? <form className="login-panel" onSubmit={signIn}>
       <h2>운영자 로그인</h2><label htmlFor="username">아이디</label><input id="username" autoComplete="username" required value={credentials.username} onChange={e => setCredentials({ ...credentials, username: e.target.value })} />
       <label htmlFor="password">비밀번호</label><input id="password" type="password" autoComplete="current-password" required value={credentials.password} onChange={e => setCredentials({ ...credentials, password: e.target.value })} />
       <button disabled={busy}>로그인</button></form> : <><div className="toolbar"><span>{user.name}님</span><button onClick={signOut} disabled={busy}>로그아웃</button></div>

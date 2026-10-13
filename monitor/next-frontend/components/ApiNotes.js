@@ -167,7 +167,7 @@ export default function ApiNotes() {
       <p className="status-message" role="status">{message}</p>
       {!user ? (
         <section className="panel api-login" aria-labelledby="api-login-title">
-          <p className="eyebrow">OPERATOR LOGIN</p><h2 id="api-login-title">DB 메모 로그인</h2>
+          <p className="eyebrow">다정한 공간을 살피는 메모</p><h2 id="api-login-title">관찰 메모 로그인</h2>
           <p>기존 감시 서비스의 운영자 계정으로 로그인해 주세요.</p>
           <form onSubmit={signIn} noValidate>
             <label htmlFor="api-username">아이디</label><input id="api-username" autoComplete="username" value={credentials.username} onChange={(e) => setCredentials({ ...credentials, username: e.target.value })} />

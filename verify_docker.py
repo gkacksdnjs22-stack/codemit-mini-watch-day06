@@ -53,7 +53,7 @@ check("운영자 로그인", status == 200 and session["user"]["username"] == "o
 token = session["csrf_token"]
 for path in ["/", "/notes"]:
     status, page = request(monitor, monitor_base + path)
-    check("Next.js production " + path, status == 200 and "Mini Watch" in page)
+    check("Next.js production " + path, status == 200 and "모아" in page)
 
 state_file = Path(__file__).with_name("verification-state.json")
 if args.phase == "prepare":
