@@ -9,9 +9,9 @@ from repositories.users import find_user_by_id
 def configure_session(app):
     key = os.getenv("SECRET_KEY", "")
     if len(key) < 32 or key.startswith("GENERATE_"):
-        raise RuntimeError("monitor/backend/.env에 일반 서비스와 같은 SECRET_KEY를 설정해 주세요.")
-    # 같은 로컬 서비스 묶음의 게시판과 대시보드가 하나의 로그인/로그아웃을 공유합니다.
+        raise RuntimeError("monitor/backend/.env에 32자 이상의 별도 SECRET_KEY를 설정해 주세요.")
     app.config.update(SECRET_KEY=key, SESSION_COOKIE_NAME="day06_monitor_session",
+                      SESSION_COOKIE_SECURE=os.getenv("SESSION_COOKIE_SECURE", "false").lower() == "true",
                       SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE="Lax")
 
 

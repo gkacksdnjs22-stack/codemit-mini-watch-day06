@@ -11,6 +11,7 @@ def configure_session(app):
     if len(key) < 32 or key.startswith("GENERATE_"):
         raise RuntimeError("general/.env에 32자 이상의 SECRET_KEY를 설정해 주세요.")
     app.config.update(SECRET_KEY=key, SESSION_COOKIE_NAME="day06_general_session",
+                      SESSION_COOKIE_SECURE=os.getenv("SESSION_COOKIE_SECURE", "false").lower() == "true",
                       SESSION_COOKIE_HTTPONLY=True, SESSION_COOKIE_SAMESITE="Lax")
 
 

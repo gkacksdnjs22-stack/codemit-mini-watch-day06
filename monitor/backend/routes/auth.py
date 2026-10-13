@@ -1,4 +1,5 @@
 import hmac
+import os
 from flask import Blueprint, current_app, request, session
 from werkzeug.security import check_password_hash
 from repositories.users import find_user
@@ -15,7 +16,8 @@ def me():
 @auth_bp.post("/account-exists")
 def account_exists():
     # 회원가입의 아이디 중복 확인에만 사용하는 서버 간 요청입니다.
-    if not hmac.compare_digest(request.headers.get("X-Internal-Auth", ""), current_app.secret_key):
+    token = os.getenv("EVENT_TOKEN", "")
+    if not token or not hmac.compare_digest(request.headers.get("X-Internal-Auth", ""), token):
         return {"error": "허용되지 않은 요청입니다."}, 403
     data = request.get_json(silent=True)
     if not isinstance(data, dict) or not isinstance(data.get("username"), str):

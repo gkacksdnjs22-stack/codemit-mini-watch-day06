@@ -1,5 +1,7 @@
 import os
-from flask import Flask, request
+from flask import Flask, request, abort
+from auth_helpers import current_user
+from observability import configure_errors
 
 from routes.posts import posts_bp
 from request_logging import register_request_logging
@@ -7,6 +9,7 @@ from routes.legacy import legacy_bp
 from routes.auth import auth_bp
 from auth_helpers import configure_session, template_auth
 
+configure_errors("mini-general")
 app = Flask(__name__)
 app.json.ensure_ascii = False
 configure_session(app)
@@ -20,6 +23,17 @@ app.context_processor(template_auth)
 @app.get("/health")
 def health():
     return {"service": "general", "status": "ok"}
+
+
+@app.get("/api/sentry-test")
+def sentry_test():
+    if os.getenv("ENABLE_SENTRY_TEST", "false").lower() != "true":
+        abort(404)
+    if current_user() is None:
+        return {"error": "로그인이 필요합니다."}, 401
+    # 지원 자료의 오류를 재현한 뒤 별도 커밋에서 수정합니다.
+    result = 1 / 0
+    return {"result": result}
 
 
 @app.after_request

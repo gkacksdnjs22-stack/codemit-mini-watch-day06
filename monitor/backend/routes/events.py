@@ -1,3 +1,5 @@
+import hmac
+import os
 from flask import Blueprint, request
 from repositories.events import create_event, list_events
 from rules import make_event
@@ -8,6 +10,9 @@ events_bp = Blueprint("events", __name__, url_prefix="/api/events")
 
 @events_bp.post("")
 def receive_event():
+    token = os.getenv("EVENT_TOKEN", "")
+    if not token or not hmac.compare_digest(request.headers.get("X-Event-Token", ""), token):
+        return {"error": "기록 전송 토큰이 올바르지 않습니다."}, 403
     event = make_event(request.get_json(silent=True))
     if event is None:
         return {"error": "method, path, status_code를 올바르게 보내 주세요."}, 400

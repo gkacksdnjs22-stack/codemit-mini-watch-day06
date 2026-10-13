@@ -16,5 +16,6 @@ def connect_db():
         user=os.environ["DB_USER"],
         password=os.environ["DB_PASSWORD"],
         connect_timeout=3,
+        sslmode=os.getenv("DB_SSLMODE", "prefer"),
         row_factory=dict_row,
     )

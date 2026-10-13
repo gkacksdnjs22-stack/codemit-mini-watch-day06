@@ -1,5 +1,6 @@
 """Flask 앱 생성과 라우터 등록. SQL은 repositories에서 실행합니다."""
 import os
+from observability import configure_errors
 import psycopg
 from flask import Flask
 from routes.auth import auth_bp
@@ -9,6 +10,7 @@ from auth_helpers import configure_session
 
 
 def create_app():
+    configure_errors("mini-monitor")
     app = Flask(__name__)
     app.json.ensure_ascii = False
     configure_session(app)

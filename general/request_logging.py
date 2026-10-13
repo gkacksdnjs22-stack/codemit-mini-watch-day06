@@ -29,7 +29,7 @@ def register_request_logging(app):
         }
         app.logger.info("request: %s", record)
         try:
-            result = requests.post(app.config["MONITOR_URL"], json=record, timeout=0.5)
+            result = requests.post(app.config["MONITOR_URL"], json=record, headers={"X-Event-Token": os.getenv("EVENT_TOKEN", "")}, timeout=3)
             result.raise_for_status()
         except requests.RequestException:
             app.logger.warning("감시 서버에 요청 기록을 전달하지 못했습니다.")

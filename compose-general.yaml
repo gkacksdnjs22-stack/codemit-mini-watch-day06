@@ -23,7 +23,10 @@ services:
       DB_NAME: general_db
       DB_USER: general_user
       DB_PASSWORD: classroom-general-db
-      SECRET_KEY: classroom-day06-shared-secret-key-for-local-practice
+      SECRET_KEY: classroom-day07-general-separate-local-practice-key
+      SESSION_COOKIE_SECURE: 'false'
+      DB_SSLMODE: prefer
+      EVENT_TOKEN: classroom-day07-events-local-only-token
       MONITOR_URL: http://monitor-api:5000/api/events
       MONITOR_API_URL: http://monitor-api:5000
       DASHBOARD_URL: http://localhost:8082/
