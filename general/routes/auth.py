@@ -32,7 +32,7 @@ def login_error(values, message, status):
 def operator_username_exists(username):
     base = os.getenv("MONITOR_API_URL", "http://127.0.0.1:5200")
     response = requests.post(base + "/api/auth/account-exists", json={"username": username},
-                             headers={"X-Internal-Auth": os.environ["EVENT_TOKEN"]}, timeout=3)
+                             headers={"X-Internal-Auth": os.getenv("EVENT_TOKEN", "")}, timeout=3)
     response.raise_for_status()
     return response.json()["exists"]
 

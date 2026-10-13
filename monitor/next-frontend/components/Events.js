@@ -17,6 +17,12 @@ export default function Events() {
       .finally(() => { if (active) setReady(true); });
     return () => { active = false; };
   }, []);
+  async function retrySession() {
+    setBusy(true); setError("");
+    try { const data = await getSession(); setUser(data.user); }
+    catch (err) { setError(err.message); }
+    finally { setBusy(false); }
+  }
   async function loadEvents() {
     setBusy(true); setError("");
     try {
@@ -29,7 +35,7 @@ export default function Events() {
   }
   async function signIn(event) {
     event.preventDefault(); setBusy(true); setError("");
-    try { const data = await login(credentials.username, credentials.password); setUser(data.user); setCredentials({ username: "", password: "" }); }
+    try { await getSession(); const data = await login(credentials.username, credentials.password); setUser(data.user); setCredentials({ username: "", password: "" }); }
     catch (err) { setError(err.message); }
     finally { setBusy(false); }
   }
@@ -41,6 +47,7 @@ export default function Events() {
   }
   return <section><p className="eyebrow">MONITOR / REQUEST LOG</p><h1>로그인 기록</h1><p>일반 게시판의 로그인 성공과 실패를 확인합니다.</p>
     {error && <p role="alert">{error}</p>}
+    {ready && !user && <button type="button" onClick={retrySession} disabled={busy}>연결 다시 확인</button>}
     {!ready ? <p>로그인 상태 확인 중…</p> : !user ? <form onSubmit={signIn}>
       <h2>운영자 로그인</h2><label htmlFor="username">아이디</label><input id="username" autoComplete="username" required value={credentials.username} onChange={e => setCredentials({ ...credentials, username: e.target.value })} />
       <label htmlFor="password">비밀번호</label><input id="password" type="password" autoComplete="current-password" required value={credentials.password} onChange={e => setCredentials({ ...credentials, password: e.target.value })} />

@@ -11,3 +11,6 @@ verification-state.json
 
 .env.*
 !.env.example
+
+# Imported reference only; actual app changes are tracked.
+day2-materials/

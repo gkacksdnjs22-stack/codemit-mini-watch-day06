@@ -61,6 +61,16 @@ export default function ApiNotes() {
     setNotes(data.notes);
   }
 
+  async function retrySession() {
+    setBusy(true); setError("");
+    try {
+      const data = await api.getSession();
+      setUser(data.user);
+      if (data.user) await refreshNotes();
+    } catch (error) { report(error); }
+    finally { setBusy(false); }
+  }
+
   async function signIn(event) {
     event.preventDefault();
     setBusy(true); setError(""); setMessage("");
@@ -153,6 +163,7 @@ export default function ApiNotes() {
   return (
     <div className="api-notes">
       {error && <p className="error api-error" role="alert">{error}</p>}
+      {!user && <button className="button secondary" type="button" disabled={busy} onClick={retrySession}>연결 다시 확인</button>}
       <p className="status-message" role="status">{message}</p>
       {!user ? (
         <section className="panel api-login" aria-labelledby="api-login-title">
