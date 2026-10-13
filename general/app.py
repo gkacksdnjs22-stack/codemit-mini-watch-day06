@@ -31,8 +31,8 @@ def sentry_test():
         abort(404)
     if current_user() is None:
         return {"error": "로그인이 필요합니다."}, 401
-    # 지원 자료의 오류를 재현한 뒤 별도 커밋에서 수정합니다.
-    result = 1 / 0
+    # 실습 오류를 제거해 같은 로그인/활성화 조건에서 정상 응답합니다.
+    result = 1 / 1
     return {"result": result}
 
 
