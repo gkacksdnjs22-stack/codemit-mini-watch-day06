@@ -2,6 +2,7 @@
     <a class="site-brand" href="{{ url_for('auth.home') }}">✿ 모아</a>
     <div class="site-links">
         {% if login_user %}
+            <a href="{{ url_for('posts.index') }}" {% if request.endpoint and request.endpoint.startswith('posts.') %}aria-current="page"{% endif %}>게시판</a>
             <span class="nav-user">{{ login_user.name }}님</span>
             {% if login_user.role == 'operator' %}<a href="{{ dashboard_url }}">관리자 화면</a>{% endif %}
             <form class="nav-logout" method="post" action="{{ url_for('auth.logout') }}">

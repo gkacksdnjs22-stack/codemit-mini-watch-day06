@@ -128,7 +128,7 @@ export default function ApiNotes() {
       // 서버의 trim/400 검증을 그대로 받아 오류를 표시하며 원본 state는 성공 뒤 갱신합니다.
       const data = editingId !== null ? await api.updateNote(editingId, form) : await api.createNote(form);
       setSelected(data.note); resetForm();
-      setMessage("메모를 DB에 저장했어요.");
+      setMessage("메모를 저장했어요.");
       await refreshNotes();
     } catch (error) { report(error); }
     finally { setBusy(false); }
@@ -152,7 +152,7 @@ export default function ApiNotes() {
       if (editingId === deleting.id) resetForm();
       if (selected?.id === deleting.id) setSelected(null);
       closeDelete();
-      setMessage("메모를 DB에서 삭제했어요.");
+      setMessage("메모를 삭제했어요.");
       await refreshNotes();
     } catch (error) { closeDelete(); report(error); }
     finally { setBusy(false); }
@@ -162,8 +162,9 @@ export default function ApiNotes() {
 
   return (
     <div className="api-notes">
+      <div className="page-heading"><div><p className="eyebrow">공간 살펴보기</p><h1>관찰 메모</h1><p className="intro">확인할 내용을 기록하고, 처리 상태를 한눈에 살펴보세요.</p></div></div>
       {error && <p className="error api-error" role="alert">{error}</p>}
-      {!user && <button className="button secondary" type="button" disabled={busy} onClick={retrySession}>연결 다시 확인</button>}
+      {!user && error && <button className="button secondary" type="button" disabled={busy} onClick={retrySession}>연결 다시 확인</button>}
       <p className="status-message" role="status">{message}</p>
       {!user ? (
         <section className="panel api-login" aria-labelledby="api-login-title">
@@ -177,36 +178,36 @@ export default function ApiNotes() {
         </section>
       ) : (
         <>
-          <div className="api-toolbar"><p><strong>{user.name}</strong> 님의 DB 메모</p><div className="button-row"><button className="button secondary" disabled={busy} onClick={refresh}>DB 목록 새로고침</button><button className="button secondary" disabled={busy} onClick={signOut}>로그아웃</button></div></div>
+          <div className="api-toolbar"><p><strong>{user.name}</strong>님 · 운영자</p><div className="button-row"><button className="button secondary" disabled={busy} onClick={refresh}>목록 새로고침</button><button className="button secondary" disabled={busy} onClick={signOut}>로그아웃</button></div></div>
           <div className="notes-workspace">
             <section className="panel editor" aria-labelledby="api-editor-title">
-              <span className="card-index">{editingId !== null ? `EDIT #${editingId}` : "NEW DB NOTE"}</span><h2 id="api-editor-title">{editingId !== null ? "DB 메모 수정" : "새 DB 메모"}</h2>
+              <span className="card-index">{editingId !== null ? `메모 #${editingId} 수정 중` : "새로운 기록"}</span><h2 id="api-editor-title">{editingId !== null ? "메모 수정" : "새 메모 작성"}</h2>
               <form onSubmit={save} noValidate>
                 <fieldset disabled={busy}>
                   <label htmlFor="api-title">제목</label><input id="api-title" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
-                  <label htmlFor="api-body">내용</label><textarea id="api-body" value={form.body} rows={6} onChange={(e) => setForm({ ...form, body: e.target.value })} />
+                  <label htmlFor="api-body">내용</label><textarea id="api-body" value={form.body} rows={4} onChange={(e) => setForm({ ...form, body: e.target.value })} />
                   <label htmlFor="api-status">처리 상태</label><select id="api-status" value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}>{Object.entries(statuses).map(([value, text]) => <option value={value} key={value}>{text}</option>)}</select>
-                  <div className="button-row"><button className="button primary" type="submit">{editingId !== null ? "DB 수정 저장" : "DB 메모 등록"}</button>{editingId !== null && <button className="button secondary" type="button" onClick={() => { resetForm(); setError(""); setMessage("수정을 취소했어요. DB의 원본은 유지됩니다."); }}>DB 수정 취소</button>}</div>
+                  <div className="button-row"><button className="button primary" type="submit">{editingId !== null ? "수정 저장" : "메모 저장"}</button>{editingId !== null && <button className="button secondary" type="button" onClick={() => { resetForm(); setError(""); setMessage("수정을 취소했어요. 원본 메모는 그대로 남아 있어요."); }}>수정 취소</button>}</div>
                 </fieldset>
-              </form><p className="session-hint">이 화면의 메모는 PostgreSQL에 저장됩니다.<br />새로고침하고 다시 조회해도 남아 있어요.</p>
+              </form><p className="session-hint">저장한 메모는 다음 접속에도 남아 있어요.<br />처리 상태를 바꾸며 확인할 내용을 정리해 보세요.</p>
             </section>
             <section className="notes-collection" aria-labelledby="api-collection-title">
-              <div className="collection-header"><h2 id="api-collection-title">저장된 DB 메모 <span className="count-badge">{notes.length}</span></h2></div>
-              <form className="lookup-form" onSubmit={(e) => { e.preventDefault(); if (/^[1-9]\d*$/.test(lookupId)) selectNote(lookupId); else setError("메모 번호는 양의 정수로 입력해 주세요."); }}>
+              <div className="collection-header"><h2 id="api-collection-title">저장된 메모 <span className="count-badge">{notes.length}</span></h2></div>
+              <details className="lookup-details"><summary>메모 번호로 찾기</summary><form className="lookup-form" onSubmit={(e) => { e.preventDefault(); if (/^[1-9]\d*$/.test(lookupId)) selectNote(lookupId); else setError("메모 번호는 양의 정수로 입력해 주세요."); }}>
                 <label htmlFor="lookup-id">메모 번호</label><input id="lookup-id" inputMode="numeric" value={lookupId} onChange={(e) => setLookupId(e.target.value)} /><button className="button secondary" disabled={busy}>번호로 조회</button>
-              </form>
-              {notes.length === 0 ? <div className="empty-state"><h3>저장된 DB 메모가 없어요.</h3><p>첫 기록을 작성해 보세요.</p></div> : <ul className="notes-list api-note-list">{notes.map((note) => <li className="note-card" key={note.id} data-db-note-id={note.id}><button className="note-title-button" disabled={busy} onClick={() => selectNote(note.id)}>{note.title}</button><div className="note-meta"><span>#{note.id} · {statuses[note.status]}</span></div></li>)}</ul>}
+              </form></details>
+              {notes.length === 0 ? <div className="empty-state"><h3>저장된 메모가 없어요.</h3><p>첫 기록을 작성해 보세요.</p></div> : <ul className="notes-list api-note-list">{notes.map((note) => <li className="note-card" key={note.id} data-db-note-id={note.id}><button className="note-title-button" disabled={busy} onClick={() => selectNote(note.id)}>{note.title}</button><div className="note-meta"><span>#{note.id}</span><span className={`note-status ${note.status}`}>{statuses[note.status]}</span></div></li>)}</ul>}
               {selected && <article className="panel api-detail" aria-labelledby="detail-title" data-selected-note-id={selected.id}>
-                <span className="card-index">DB NOTE #{selected.id} · {statuses[selected.status]}</span><h2 id="detail-title">{selected.title}</h2><p className="note-content">{selected.body}</p>
-                <div className="button-row"><button className="button secondary" disabled={busy} onClick={startEdit}>선택한 DB 메모 수정</button><button className="button secondary" disabled={busy} onClick={() => { setDeleting(selected); setMessage(""); setError(""); }}>선택한 DB 메모 삭제</button></div>
+                <span className="card-index">메모 #{selected.id} · {statuses[selected.status]}</span><h2 id="detail-title">{selected.title}</h2><p className="note-content">{selected.body}</p>
+                <div className="button-row"><button className="button secondary" disabled={busy} onClick={startEdit}>선택한 메모 수정</button><button className="button secondary" disabled={busy} onClick={() => { setDeleting(selected); setMessage(""); setError(""); }}>메모 삭제</button></div>
               </article>}
             </section>
           </div>
         </>
       )}
       {deleting && <dialog ref={dialogRef} className="delete-dialog" aria-labelledby="api-delete-title" onCancel={(e) => { e.preventDefault(); if (!busy) closeDelete(); }}>
-        <p className="eyebrow">DELETE DB NOTE #{deleting.id}</p><h2 id="api-delete-title">DB에서 이 메모를 삭제할까요?</h2><blockquote>{deleting.title}</blockquote>
-        <div className="button-row"><button className="button secondary" disabled={busy} autoFocus onClick={closeDelete}>DB 삭제 취소</button><button className="button danger" disabled={busy} onClick={confirmDelete}>DB 삭제 확정</button></div>
+        <p className="eyebrow">DELETE 메모 #{deleting.id}</p><h2 id="api-delete-title">이 메모를 삭제할까요?</h2><blockquote>{deleting.title}</blockquote>
+        <div className="button-row"><button className="button secondary" disabled={busy} autoFocus onClick={closeDelete}>취소</button><button className="button danger" disabled={busy} onClick={confirmDelete}>메모 삭제</button></div>
       </dialog>}
     </div>
   );
