@@ -1,3 +1,5 @@
+from event_rules import make_event  # 기존 실습 import와 호환하며 분류 구현은 한 곳에 둔다.
+
 NOTE_STATUSES = {"pending", "in_progress", "completed"}
 
 
@@ -16,20 +18,3 @@ def validate_note(data, default_status="pending"):
     if not isinstance(status, str) or status not in NOTE_STATUSES:
         return None, "처리 상태는 확인 전, 확인 중, 완료 중에서 선택해 주세요."
     return {"title": title, "body": body, "status": status}, None
-
-
-def make_event(data):
-    if not isinstance(data, dict):
-        return None
-    method, path, status = data.get("method"), data.get("path"), data.get("status_code")
-    if not isinstance(method, str) or method not in {"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"}:
-        return None
-    if not isinstance(path, str) or not path.startswith("/") or len(path) > 500:
-        return None
-    if type(status) is not int or not 100 <= status <= 599:
-        return None
-    if method == "POST" and path in {"/auth/login", "/login", "/api/auth/login"} and status in (200, 303, 401):
-        event_type = "login_success" if status in (200, 303) else "login_failure"
-    else:
-        event_type = "http_request"
-    return {"method": method, "path": path, "status_code": status, "event_type": event_type}

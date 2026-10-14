@@ -6,6 +6,7 @@ from flask import Flask
 from routes.auth import auth_bp
 from routes.events import events_bp
 from routes.notes import notes_bp
+from routes.analysis import analysis_bp
 from auth_helpers import configure_session
 
 
@@ -18,6 +19,7 @@ def create_app():
     app.register_blueprint(auth_bp)
     app.register_blueprint(events_bp)
     app.register_blueprint(notes_bp)
+    app.register_blueprint(analysis_bp)
 
     @app.after_request
     def no_cache(response):

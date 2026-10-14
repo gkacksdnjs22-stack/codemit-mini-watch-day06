@@ -40,3 +40,9 @@ export const getNote = (id) => request(`/notes/${id}`);
 export const createNote = (values) => request("/notes", { method: "POST", body: JSON.stringify(values) });
 export const updateNote = (id, values) => request(`/notes/${id}`, { method: "PUT", body: JSON.stringify(values) });
 export const deleteNote = (id) => request(`/notes/${id}`, { method: "DELETE" });
+export const startObservation = () => request("/analysis/observations", { method: "POST" });
+export const getAnalysis = (afterId, threshold, referenceTime) => {
+  const params = new URLSearchParams({ after_id: String(afterId), threshold: String(threshold) });
+  if (referenceTime) params.set("reference_time", referenceTime);
+  return request(`/analysis?${params}`);
+};

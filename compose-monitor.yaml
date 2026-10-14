@@ -28,6 +28,11 @@ services:
       DB_SSLMODE: prefer
       EVENT_TOKEN: classroom-day07-events-local-only-token
       PORT: '5000'
+      GENERAL_SERVICE_URL: http://general-api:5000
+      TRAINING_USERNAME: ${TRAINING_USERNAME:-student}
+      TRAINING_PASSWORD: ${TRAINING_PASSWORD:-}
+    volumes:
+      - ./monitor/backend/learning:/app/learning:ro
     depends_on:
       monitor-db:
         condition: service_healthy

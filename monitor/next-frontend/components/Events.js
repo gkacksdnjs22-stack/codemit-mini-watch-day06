@@ -46,7 +46,7 @@ export default function Events() {
     catch (err) { setError(err.message); }
     finally { setBusy(false); }
   }
-  const labels = { login_success: "로그인 성공", login_failure: "로그인 실패", http_request: "일반 요청" };
+  const labels = { login_success: "로그인 성공", login_failure: "로그인 실패", http_request: "일반 요청", post_list: "목록 조회", request_error: "요청 오류" };
   return <section>
     <div className="page-heading"><div><p className="eyebrow">공간 살펴보기</p><h1>로그인 기록</h1><p className="intro">누가 접속했고 어떤 요청이 있었는지 확인해 보세요.</p></div></div>
     {error && <p role="alert">{error}</p>}

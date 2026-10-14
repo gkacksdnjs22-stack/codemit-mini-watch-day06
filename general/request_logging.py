@@ -1,4 +1,5 @@
 import os
+import json
 from datetime import datetime, timezone
 from time import perf_counter
 
@@ -24,10 +25,10 @@ def register_request_logging(app):
             "timestamp": datetime.now(timezone.utc).isoformat(),
             "method": request.method,
             "path": request.path,
-            "status_code": 200 if request.endpoint == "auth.login" and request.method == "POST" and response.status_code == 303 else response.status_code,
+            "status_code": response.status_code,
             "duration_ms": round((perf_counter() - g.request_started) * 1000, 2),
         }
-        app.logger.info("request: %s", record)
+        print(json.dumps(record, ensure_ascii=False), flush=True)
         try:
             result = requests.post(app.config["MONITOR_URL"], json=record, headers={"X-Event-Token": os.getenv("EVENT_TOKEN", "")}, timeout=3)
             result.raise_for_status()

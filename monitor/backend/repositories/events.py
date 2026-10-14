@@ -21,3 +21,22 @@ def list_events(event_type=None):
     for row in rows:
         row["occurred_at"] = row["occurred_at"].isoformat()
     return rows
+
+
+def latest_event_id():
+    with connect_db() as conn:
+        return conn.execute("SELECT COALESCE(MAX(id), 0) AS id FROM http_events").fetchone()["id"]
+
+
+def read_observation(after_id, reference_time):
+    """ID 경계와 고정한 DB 수신시각으로 같은 관찰을 다시 읽는다."""
+    from datetime import timedelta
+    with connect_db() as conn:
+        rows = conn.execute(
+            "SELECT id, occurred_at, method, path, status_code, event_type FROM http_events "
+            "WHERE id > %s AND occurred_at >= %s AND occurred_at <= %s ORDER BY occurred_at, id",
+            (after_id, reference_time - timedelta(seconds=60), reference_time),
+        ).fetchall()
+    for row in rows:
+        row["occurred_at"] = row["occurred_at"].isoformat()
+    return rows

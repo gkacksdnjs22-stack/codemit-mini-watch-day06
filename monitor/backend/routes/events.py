@@ -2,7 +2,7 @@ import hmac
 import os
 from flask import Blueprint, request
 from repositories.events import create_event, list_events
-from rules import make_event
+from event_rules import make_event
 from auth_helpers import api_access_error
 
 events_bp = Blueprint("events", __name__, url_prefix="/api/events")
@@ -26,6 +26,6 @@ def get_events():
     if error:
         return error
     event_type = request.args.get("event_type")
-    if event_type is not None and event_type not in {"login_success", "login_failure", "http_request"}:
+    if event_type is not None and event_type not in {"login_success", "login_failure", "http_request", "post_list", "request_error"}:
         return {"error": "지원하지 않는 이벤트 종류입니다."}, 400
     return {"events": list_events(event_type)}

@@ -41,7 +41,11 @@ def operator_username_exists(username):
 def home():
     user = current_user()
     if user:
-        return redirect(os.getenv("DASHBOARD_URL", "http://127.0.0.1:5173/") if user["role"] == "operator" else url_for("posts.index"))
+        if user["role"] == "operator":
+            return redirect(os.getenv("DASHBOARD_URL", "http://127.0.0.1:5173/"))
+        # Day3의 실제 GET / 200을 목록 조회로 기록한다. /board도 유지한다.
+        from routes.posts import index
+        return index()
     return redirect(url_for("auth.login"))
 
 
