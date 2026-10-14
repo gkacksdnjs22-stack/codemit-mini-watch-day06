@@ -6,6 +6,7 @@ node_modules/
 __pycache__/
 *.pyc
 *.log
+*.pcap
 data/
 verification-state.json
 

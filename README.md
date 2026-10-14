@@ -31,6 +31,9 @@
 | Next api/notes.js, app/api/[...path]/route.js | 분석 API 요청, 쿠키·CSRF·응답 전달. 서버 환경변수는 브라우저에 노출하지 않음 |
 | SiteNav.js, Events.js, globals.css | 요청 분석 메뉴·반응형 결과 카드·새 기록 종류 표시 |
 | compose-monitor.yaml | 학습 폴더의 읽기 전용 마운트, 로컬 일반 서비스 주소와 실습 회원 환경변수 |
+| learning/pcap_lab.py | 4교시의 교육용 패킷 생성·PCAP 읽기·시간 선택·개수/바이트 합을 독립 모듈로 구현 |
+| learning/ioc_lab.py | 5교시의 문서용 IP 지표와 문자열 일치·불일치를 독립 모듈로 구현 |
+| monitor/backend/requirements.txt, tests/test_education.py | Scapy 의존성과 PCAP 파일 왕복·시간 경계·IOC 정확한 일치·HTTP 자료 제외 검사 |
 
 일반 MONITOR_URL=http://monitor-api:5000/api/events는 전송 주소이며 양쪽 EVENT_TOKEN은
 일치해야 한다. Next MONITOR_API_URL은 서버 전용이고 브라우저는 같은 출처 /api를 쓴다.
@@ -175,7 +178,76 @@ SELECT로 근거 ID 원본과 이전 기록 보존을 확인한다. down -v·vol
 - 새 관찰 뒤 일반 요청 없이 조회: 0회·기준 미해당·0행 확인. DB 직접 조회에서
   새 관찰 전 74행과 이전 근거 13행이 삭제되지 않고 남아 있음을 확인했다.
 - 실제 10회 경계: 10회·검토 후보·11행 확인 후 새 관찰과 capture 12로 기본 사례 복구.
+- 추가 선택 실습을 Docker에서 실행: 교육용 PCAP 앞 5초는 5개·360바이트,
+  앞 1초는 2개·114바이트. IOC 일치는 1건(True), 불일치는 0건(False).
+  PCAP 읽기 왕복·정확한 시간 경계와 IOC 원본 보존·HTTP 자료 제외 테스트 2개 통과.
 - 새 클라우드 배포는 하지 않았다.
+
+### 선택: PCAP 독립 실습
+
+4교시의 생성 → 파일 읽기 → 시간 선택 → 개수·바이트 합 계산 흐름을
+`learning/pcap_lab.py`로 구현했다. `generate_education_pcap`은 Scapy의 Ether/IP/UDP/Raw로
+교육용 프레임 6개를 만들고 `wrpcap`으로 파일에 쓴다. `summarize_pcap`은 `rdpcap`으로
+**그 파일을 다시 읽은 뒤** 첫 프레임 시각부터 `0 <= 상대시각 < 구간`인 패킷을 선택한다.
+같은 선택 목록에서 개수와 `sum(len(bytes(packet)))`을 계산한다. 결과 숫자를 고정하지 않는다.
+시각은 Decimal로 비교해 4.999999초와 5초 경계를 구분한다.
+
+이 PCAP은 **직접 생성한 교육용 패킷 파일**이며 내 게시판의 실제 네트워크 캡처가 아니다.
+패킷 전송·실제 트래픽 캡처는 수행하지 않는다. `source=pcap_education`으로 표시하고
+HTTP `build_report`나 분석 API에 입력하지 않는다. 바이트 합은 PCAP에 저장한 프레임의
+Ethernet 14 + IPv4 20 + UDP 8 + 교육용 payload 길이이며 PCAP 파일 헤더·레코드 헤더는 제외한다.
+
+| 상대시각(초) | payload 바이트 | 저장 프레임 바이트 | 앞 5초 | 앞 1초 |
+|---|---|---|---|---|
+| 0 | 10 | 52 | 포함 | 포함 |
+| 0.5 | 20 | 62 | 포함 | 포함 |
+| 1 | 30 | 72 | 포함 | 제외 |
+| 2 | 40 | 82 | 포함 | 제외 |
+| 4.999999 | 50 | 92 | 포함 | 제외 |
+| 5 | 60 | 102 | 제외 | 제외 |
+
+예상은 앞 5초 **5개·360바이트**, 앞 1초 **2개·114바이트**다. 같은 파일에서 구간을
+1초로 줄이면 1·2·4.999999초의 세 프레임이 제외되어 3개·246바이트가 줄어든다.
+구간 조건이 바뀐 것이지 패킷 내용이나 파일을 바꾼 것이 아니다. 두 값은 아래 명령으로
+Docker에서 직접 실행해 예상과 일치함을 확인했다(Scapy 2.8.0).
+
+Scapy 의존성을 적용한 뒤 실행한다. learning 폴더는 읽기 전용이므로 파일은 컨테이너의
+임시 폴더에 만든다. 기본 명령은 임시 PCAP을 생성·읽기·비교한 뒤 자동 정리한다.
+파일을 별도로 남기려면 두 번째 실행 방식의 `/tmp` 경로를 사용한다. 생성한 PCAP은 제출하지 않는다.
+
+```cmd
+docker compose -f compose-monitor.yaml up -d --build monitor-api
+docker compose -f compose-monitor.yaml restart monitor-gateway
+docker compose -f compose-monitor.yaml exec -T monitor-api python -m learning.pcap_lab
+docker compose -f compose-monitor.yaml exec -T monitor-api python -m learning.pcap_lab --output /tmp/day3-education.pcap
+```
+
+파일 생성·읽기 API는 [Scapy 공식 문서](https://scapy.readthedocs.io/en/latest/usage.html)를 참고했다.
+
+### 선택: IOC 일치 실습
+
+5교시의 문서용 IP 지표 비교를 `learning/ioc_lab.py:match_ioc`으로 구현했다.
+입력은 직접 만든 `source=ioc_education`의 예제 두 행이며, `record['ip'] == indicator`의
+**정확한 문자열 일치**로 선택한다. 부분 문자열·같은 대역 여부를 일치로 간주하지 않는다.
+선택 행을 복사해 원본을 보존하고 일치 수와 같은 선택 행의 근거 ID를 반환한다.
+
+| 예제 IP 목록 | 비교 지표 | 예상 일치 | 근거 |
+|---|---|---|---|
+| 192.0.2.10, 198.51.100.20 | 192.0.2.10 | True · 1건 | ioc-demo-1 |
+| 같은 두 행 | 203.0.113.10 | False · 0건 | 빈 목록 |
+
+같은 예제에서 지표 문자열만 바꾸면 일치 여부가 바뀐다. 두 사례는 아래 명령으로
+Docker에서 직접 실행해 예상과 일치함을 확인했다. 여기의 IP는 실제 공격 지표가 아니라
+[RFC 5737의 문서용 주소](https://www.rfc-editor.org/rfc/rfc5737)로 만든 교육용 예제다.
+
+```cmd
+docker compose -f compose-monitor.yaml exec -T monitor-api python -m learning.ioc_lab
+```
+
+실제 HTTP 원본에는 IP 필드가 없다. 따라서 이 일치 결과로 실제 사용자나 요청을
+식별하거나 공격·침해를 확정할 수 없다. 불일치도 정상임을 입증하지 않는다.
+`match_ioc`는 교육용 source만 받아 `http_live` 행을 제외하며, HTTP 카드와 독립이다.
+조회 12회·근거 13행에 IOC 예제나 교육용 PCAP 행을 붙이지 않는다.
 
 ### 선택: 기준 경계
 
@@ -210,7 +282,7 @@ evidence = [event["id"] for event in records]
 ```
 
 같은 목록으로 횟수·근거를 구하며 404는 문맥으로만 합친다. API/화면도 ID와 시각을 보존한다.
-PCAP·IOC 선택 실습은 구현하지 않았다.
+PCAP·IOC 선택 실습은 위의 별도 교육용 모듈로 실행하며 HTTP 근거와 섞지 않는다.
 
 ### 제출물
 
